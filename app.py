@@ -9,8 +9,7 @@ import io
 from PIL import Image
 
 # --- Konfiguracja ---
-# Ładowanie zmiennych środowiskowych z pliku .env
-load_dotenv()
+# Klucz API będzie załadowany najpierw ze zmiennych środowiskowych, potem z .env
 
 
 # --- Stałe ---
@@ -35,16 +34,22 @@ with st.sidebar:
     st.title("Ustawienia")
     
     # Konfiguracja klucza API Gemini
+    # Najpierw sprawdź zmienne środowiskowe systemowe, potem .env
     try:
-        api_key = os.environ["GEMINI_API_KEY"]
+        api_key = os.getenv("GEMINI_API_KEY")
+        if not api_key:
+            # Jeśli nie ma w środowisku, załaduj z .env
+            load_dotenv()
+            api_key = os.getenv("GEMINI_API_KEY")
+        
+        if not api_key:
+            raise ValueError("Brak klucza API")
+        
         client = genai.Client(api_key=api_key)
         st.success("Klucz API Gemini załadowany.")
-    except KeyError:
+    except (ValueError, Exception) as e:
         st.error("⚠️ Brak klucza API Gemini!")
-        st.info("Utwórz plik `.env` z zawartością: `GEMINI_API_KEY=your_key_here`")
-        st.stop()
-    except Exception as e:
-        st.error(f"Błąd inicjalizacji klienta: {e}")
+        st.info("Ustaw zmienną środowiskową `GEMINI_API_KEY` lub utwórz plik `.env` z zawartością: `GEMINI_API_KEY=your_key_here`")
         st.stop()
     
     st.header("Konfiguracja promptu systemowego")
