@@ -33,13 +33,14 @@ W panelu bocznym użytkownik może konfigurować następujące parametry:
 2. **Analiza z Chain-of-Thought:** Po wciśnięciu przycisku "Generuj grafikę", model `Gemini 2.5 Flash` analizuje tekst w 4 krokach:
    - **KROK 1 - IDENTYFIKACJA:** Rozpoznaje główny temat, emocje i kontekst
    - **KROK 2 - UPROSZCZENIE:** Redukuje do 1-2 kluczowych elementów
-   - **KROK 3 - WIZUALIZACJA ETR:** Stosuje 10 zasad ETR
+   - **KROK 3 - WIZUALIZACJA ETR:** Stosuje 11 zasad ETR (w tym autentyczność lokalizacji i obiektów)
    - **KROK 4 - WYGENERUJ PROMPT:** Tworzy zwięzły, angielski prompt fotorealistyczny
    
-   Model uczy się na 3 przykładach (few-shot learning):
+   Model uczy się na 4 przykładach (few-shot learning):
    - Scena z obiektami (autobus + kasownik)
    - Emocja osoby przez mimikę (smutek po utracie pracy)
    - Abstrakcyjna emocja przez obiekt (strach przed igłą → strzykawka)
+   - Konkretna lokalizacja (Zamek na Wawelu → autentyczny obraz Wawelu)
 
 3. **Generowanie Grafiki:** Stworzony prompt jest przekazywany do modelu `Gemini 2.5 Flash Image`, który generuje fotorealistyczny obraz w rozdzielczości 1024x1024.
 
@@ -61,18 +62,19 @@ Grafiki są zapisywane w folderze `generated_images/`. Metadane każdej generacj
 * `comments`: Dodatkowe uwagi od użytkownika.
 ## Wymagania dla grafiki
 
-Wymagania ETR zostały zaimplementowane poprzez odpowiednią konstrukcję domyślnego promptu systemowego z 10 zasadami:
+Wymagania ETR zostały zaimplementowane poprzez odpowiednią konstrukcję domyślnego promptu systemowego z 11 zasadami:
 
 1. **DOSŁOWNOŚĆ:** Bez metafor i symboli artystycznych
 2. **PROSTOTA:** Jedna scena, 1-2 obiekty/osoby, proste tło
 3. **REALIZM:** Styl fotorealistyczny
 4. **JEDNOZNACZNOŚĆ:** Typowe, łatwo rozpoznawalne obiekty
-5. **KONTEKST POLSKI:** Subtelne wskażówki polskiego kontekstu
-6. **EMOCJE:** Mimika twarzy dla osób, proste obiekty dla abstrakcji
-7. **KONTAKT WZROKOWY:** Osoby patrzą na siebie
-8. **BEZ TEKSTU:** Unikaj napisów (z wyjątkami)
-9. **KOLORY:** Ograniczona paleta, stonowane barwy
-10. **TŁO:** Jednolite lub delikatny gradient
+5. **AUTENTYCZNOŚĆ:** Konkretne lokalizacje, obiekty i marki z tekstu muszą być przedstawione autentycznie (np. Wawel → "Wawel Castle in Krakow", nie "generic castle")
+6. **KONTEKST POLSKI:** Subtelne wskazówki polskiego kontekstu
+7. **EMOCJE:** Mimika twarzy dla osób, proste obiekty dla abstrakcji
+8. **KONTAKT WZROKOWY:** Osoby patrzą na siebie
+9. **BEZ TEKSTU:** Unikaj napisów (wyjątek: konkretne nazwy/marki z tekstu)
+10. **KOLORY:** Ograniczona paleta, stonowane barwy
+11. **TŁO:** Jednolite lub delikatny gradient
 
 Grafika ma kształt kwadratu (rozdzielczość 1024x1024).
 ### Wariant B: Placeholder + Tekst (zawsze dostępny)
@@ -126,13 +128,23 @@ streamlit run app.py
 
 ### 1. Chain-of-Thought Prompting
 Model wyświetla swoje rozumowanie w 3 krokach przed wygenerowaniem promptu, co zwiększa jakość i przejrzystość procesu.
-
 ### 2. Few-Shot Learning
+Prompt systemowy zawiera 4 szczegółowe przykłady różnych typów scen ETR, z których model uczy się odpowiedniego podejścia:
+- Sceny z konkretnymi obiektami
+- Emocje wyrażone przez mimikę
+- Abstrakcyjne emocje przez symbole
+- Autentyczne lokalizacje (Wawel)
 Prompt systemowy zawiera 3 szczegółowe przykłady różnych typów scen ETR, z których model uczy się odpowiedniego podejścia.
+### 4. Wariant B dla Emocji
+Hybrydowe podejście:
+- Osoby z emocjami → mimika + język ciała
+- Abstrakcyjne emocje → prosty obiekt symboliczny
 
-### 3. Rozdzielone Temperatury
-- **Analiza tekstu (0.6):** Optymalny balans między kreatywnością a spójnością rozumowania
-- **Generowanie obrazu (0.4):** Konserwatywne podejście dla stabilnej jakości wizualnej
+### 5. Autentyczność i Konkretność
+Model został wytrenowany aby:
+- Rozpoznawać konkretne lokalizacje (np. Wawel, Pałac Kultury) i generować ich autentyczne obrazy
+- Zachowywać nazwy marek i konkretnych obiektów z tekstu
+- NIE zamieniać szczegółów na ogólnikiejście dla stabilnej jakości wizualnej
 
 ### 4. Wariant B dla Emocji
 Hybrydowe podejście:

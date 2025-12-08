@@ -16,8 +16,8 @@ Aplikacja wspiera tworzenie materiałów ETR poprzez automatyczne generowanie pr
 
 ### 🤖 Inteligentna Analiza Tekstu
 - **Chain-of-Thought Prompting:** Model pokazuje swoje rozumowanie w 4 krokach
-- **Few-Shot Learning:** 3 przykłady uczące model prawidłowego podejścia
-- **10 Zasad ETR:** Dosłowność, prostota, realizm, polski kontekst i więcej
+- **Few-Shot Learning:** 4 przykłady uczące model prawidłowego podejścia
+- **11 Zasad ETR:** Dosłowność, prostota, realizm, autentyczność lokalizacji i więcej
 
 ### 🎨 Generowanie Obrazów
 - **Gemini 2.5 Flash Image:** Fotorealistyczne obrazy 1024x1024
@@ -106,8 +106,9 @@ etr-img/
 | Technika | Opis | Korzyści |
 |----------|------|----------|
 | **Chain-of-Thought** | Model pokazuje rozumowanie (KROK 1-3) | Przejrzystość, lepsza jakość |
-| **Few-Shot Learning** | 3 przykłady różnych typów scen | Spójność ze standardem ETR |
+| **Few-Shot Learning** | 4 przykłady różnych typów scen ETR | Spójność ze standardem ETR |
 | **Dual Temperature** | Osobne kontrolki dla tekstu (0.6) i obrazu (0.4) | Optymalna kreatywność vs stabilność |
+| **Authenticity** | Konkretne lokalizacje i marki są autentyczne | Dokładność przekazu |
 | **Hybrid Emotions** | Mimika dla osób, obiekty dla abstrakcji | Dosłowność + ekspresja emocji |
 
 ## 📋 Format Danych CSV
@@ -136,18 +137,19 @@ Każda generacja zapisuje następujące kolumny:
 
 ## 🌟 Wymagania ETR
 
-Aplikacja implementuje 10 zasad ETR dla grafik:
+Aplikacja implementuje 11 zasad ETR dla grafik:
 
 1. ✅ **DOSŁOWNOŚĆ** - bez metafor i symboli artystycznych
 2. ✅ **PROSTOTA** - jedna scena, 1-2 elementy
 3. ✅ **REALIZM** - fotorealistyczny styl
 4. ✅ **JEDNOZNACZNOŚĆ** - typowe obiekty
-5. ✅ **KONTEKST POLSKI** - subtelne kulturowe wskażówki
-6. ✅ **EMOCJE** - mimika twarzy lub proste obiekty
-7. ✅ **KONTAKT WZROKOWY** - osoby patrzą na siebie
-8. ✅ **BEZ TEKSTU** - unikaj napisów
-9. ✅ **KOLORY** - stonowana paleta
-10. ✅ **TŁO** - proste, nieodwracające uwagi
+5. ✅ **AUTENTYCZNOŚĆ** - konkretne lokalizacje (Wawel, Pałac Kultury) i marki są autentyczne
+6. ✅ **KONTEKST POLSKI** - subtelne kulturowe wskazówki
+7. ✅ **EMOCJE** - mimika twarzy lub proste obiekty
+8. ✅ **KONTAKT WZROKOWY** - osoby patrzą na siebie
+9. ✅ **BEZ TEKSTU** - unikaj napisów (wyjątek: kluczowe nazwy z tekstu)
+10. ✅ **KOLORY** - stonowana paleta
+11. ✅ **TŁO** - proste, nieodwracające uwagi
 
 ## 🔮 Roadmap
 

@@ -36,10 +36,16 @@ Zastosuj zasady:
 2. PROSTOTA: Jedna scena, 1-2 obiekty/osoby, proste tło
 3. REALIZM: Styl fotorealistyczny ("photorealistic photo of...")
 4. JEDNOZNACZNOŚĆ: Typowe, łatwo rozpoznawalne obiekty i postacie
-5. KONTEKST POLSKI: Dodaj subtelne wskazówki kontekstu (jeśli pasuje):
+5. AUTENTYCZNOŚĆ: Jeśli tekst podaje konkretną lokalizację, obiekt lub markę - użyj DOKŁADNIE tego:
+   • "Zamek na Wawelu" → "Wawel Castle in Krakow"
+   • "Pałac Kultury" → "Palace of Culture and Science in Warsaw"
+   • "Toyota Corolla" → "Toyota Corolla car"
+   • "Żabka" → "Żabka convenience store"
+   NIE zamieniaj na ogólniki typu "a castle" lub "a car"
+6. KONTEKST POLSKI: Dodaj subtelne wskazówki kontekstu (jeśli pasuje):
    "in Poland", "Polish apartment", "Polish street sign"
 
-6. EMOCJE - dwa podejścia:
+7. EMOCJE - dwa podejścia:
    A) Gdy tekst opisuje OSOBĘ z emocją → mimika twarzy + język ciała
       • Radość: uśmiech, podniesione brwi
       • Smutek: opuszczone kąciki ust, pochylona głowa
@@ -50,11 +56,11 @@ Zastosuj zasady:
       • "Wstręt do brudu" → brudna skarpetka
       (UWAGA: używaj najprostszych symboli, unikaj artystycznych metafor)
 
-7. KONTAKT WZROKOWY: Jeśli są 2+ osoby → powinny na siebie patrzeć
-8. BEZ TEKSTU: Unikaj napisów na znakach, koszulkach, książkach
-   (wyjątek: tekst kluczowy dla zrozumienia sceny)
-9. KOLORY: Ograniczona paleta, neutralne/stonowane barwy
-10. TŁO: Jednolite lub delikatny gradient, nie odwraca uwagi
+8. KONTAKT WZROKOWY: Jeśli są 2+ osoby → powinny na siebie patrzeć
+9. BEZ TEKSTU: Unikaj napisów na znakach, koszulkach, książkach
+   (wyjątek: tekst kluczowy dla zrozumienia sceny lub konkretna nazwa/marka z tekstu)
+10. KOLORY: Ograniczona paleta, neutralne/stonowane barwy
+11. TŁO: Jednolite lub delikatny gradient, nie odwraca uwagi
 
 KROK 4 - WYGENERUJ PROMPT:
 Format: "A photorealistic photo of [główny temat] [czynność/stan] [gdzie]. [Szczegóły mimiki/emocji jeśli są]. Simple [kolor] background, soft neutral lighting."
@@ -93,11 +99,24 @@ Tekst wejściowy: "Ludzie boją się szczepionki. Strach przed igłą."
 
 [Analiza]
 KROK 1: Emocja (strach) + obiekt (igła/szczepionka) - brak konkretnej osoby
-KROK 2: Abstrakcyjna emocja → użyj obiektu wywołującego strach (zasada 6B)
+KROK 2: Abstrakcyjna emocja → użyj obiektu wywołującego strach (zasada 7B)
 KROK 3: Prosty symbol - strzykawka w zbliżeniu, sterylne tło medyczne
 KROK 4: ↓
 
 Prompt: "A photorealistic close-up photo of a medical syringe with a needle on a white sterile table in a clinical setting. Simple white background with soft overhead lighting, cool color temperature."
+
+---
+
+PRZYKŁAD 4:
+Tekst wejściowy: "Turyści odwiedzają Zamek Królewski na Wawelu w Krakowie. Podziwiają piękną architekturę."
+
+[Analiza]
+KROK 1: Turyści + konkretna lokalizacja (Wawel, Kraków) + czynność (podziwianie)
+KROK 2: Główna scena - widok Wawelu, turyści w tle (opcjonalnie)
+KROK 3: AUTENTYCZNOŚĆ (zasada 5) - MUSI być rzeczywisty Wawel, NIE "generic castle"
+KROK 4: ↓
+
+Prompt: "A photorealistic photo of Wawel Royal Castle in Krakow, Poland. The famous red brick renaissance architecture with castle towers visible against blue sky. A few tourists walking in the courtyard. Simple composition, natural daylight, warm color tones."
 
 ═══════════════════════════════════════════════════════════════════
 
