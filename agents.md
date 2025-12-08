@@ -4,13 +4,13 @@ Aplikacja ma za zadanie generować grafiki do ETR (Easy to Read Text), czyli spe
 
 ## Stos technologiczny
 
-* **Python 3**
+* **Python 3.12+**
 * **Streamlit** - do budowy interfejsu użytkownika.
-* **Google Generative AI for Python** - jako SDK do obsługi modeli AI.
-  * Model językowy: **Gemini 2.5 Flash** (do analizy tekstu i tworzenia promptów).
-  * Model graficzny: **Dwa warianty implementacji** (patrz: Warianty Generowania Grafik)
+* **Google Gen AI SDK (google-genai)** - jako SDK do obsługi modeli AI.
+  * Model językowy: **Gemini 2.5 Flash** (do analizy tekstu i tworzenia promptów z Chain-of-Thought).
+  * Model graficzny: **Gemini 2.5 Flash Image** (do generowania fotorealistycznych obrazów).
 * **Pandas** - do zarządzania danymi zwrotnymi.
-* **Pillow** - do generowania obrazów placeholder i edycji grafik.
+* **Pillow** - do przetwarzania obrazów.
 
 ## Opis działania
 
@@ -20,29 +20,31 @@ Aplikacja działa w oparciu o dwuetapowy proces generowania i posiada rozbudowan
 
 W panelu bocznym użytkownik może konfigurować następujące parametry:
 
-1. **Prompt Systemowy:** Użytkownik może edytować główną instrukcję (prompt systemowy), która jest wysyłana do modelu języka Gemini 2.5 Flash. Pozwala to na eksperymentowanie ze sposobem, w jaki model analizuje tekst i tworzy prompt do obrazu.
-2. **Parametry Generowania:**
-    * **Temperatura:** Suwak pozwalający ustawić kreatywność modelu (od 0.0 do 1.0).
-    * **Styl Grafiki:** Pole wyboru pozwalające wybrać jeden z trzech stylów: `Fotograficzny`, `Rysunkowy`, `Komiksowy`.
-3. **Tryb Generowania:** Wybór między dwoma wariantami generowania grafik (patrz: Warianty Generowania Grafik)
-
+1. **Prompt Systemowy:** Użytkownik może edytować główną instrukcję (prompt systemowy), która jest wysyłana do modelu języka Gemini 2.5 Flash. Prompt zawiera:
+   - Proces Chain-of-Thought (4 kroki analizy)
+   - 10 zasad ETR (dosłowność, prostota, realizm, itp.)
+   - 3 przykłady few-shot learning
+2. **Parametry Generowania (Ustawienia zaawansowane):**
+    * **Temperatura analizy tekstu:** Kontroluje kreatywność interpretacji tekstu (domyślnie 0.6)
 ### Główny Proces
 
 1. **Wprowadzenie Tekstu:** Użytkownik wkleja akapit tekstu w języku polskim.
-2. **Analiza i Tworzenie Promptu:** Po wciśnięciu przycisku "Generuj grafikę", model `Gemini 2.5 Flash` analizuje tekst, biorąc pod uwagę instrukcje z **promptu systemowego** oraz wybrany **styl**. Na tej podstawie tworzy zwięzły, angielski prompt do generatora grafiki.
-3. **Generowanie Grafiki:** Stworzony prompt jest przekazywany do wybranego wariantu generowania:
-   - **Wariant A (Images API):** Próbuje użyć Google Images API do rzeczywistej generacji obrazu (wymaga uprawnień API).
-   - **Wariant B (Fallback):** Generuje obraz placeholder z tekstem zawierającym prompt i parametry (domyślny, zawsze dostępny).
+
+2. **Analiza z Chain-of-Thought:** Po wciśnięciu przycisku "Generuj grafikę", model `Gemini 2.5 Flash` analizuje tekst w 4 krokach:
+   - **KROK 1 - IDENTYFIKACJA:** Rozpoznaje główny temat, emocje i kontekst
+   - **KROK 2 - UPROSZCZENIE:** Redukuje do 1-2 kluczowych elementów
+   - **KROK 3 - WIZUALIZACJA ETR:** Stosuje 10 zasad ETR
+   - **KROK 4 - WYGENERUJ PROMPT:** Tworzy zwięzły, angielski prompt fotorealistyczny
+   
+   Model uczy się na 3 przykładach (few-shot learning):
+   - Scena z obiektami (autobus + kasownik)
+   - Emocja osoby przez mimikę (smutek po utracie pracy)
+   - Abstrakcyjna emocja przez obiekt (strach przed igłą → strzykawka)
+
+3. **Generowanie Grafiki:** Stworzony prompt jest przekazywany do modelu `Gemini 2.5 Flash Image`, który generuje fotorealistyczny obraz w rozdzielczości 1024x1024.
+
 4. **Wyświetlanie Wyników i Przejrzystość Procesu:**
     * W głównym interfejsie wyświetlany jest wygenerowany obraz.
-    * Poniżej znajduje się sekcja "Szczegóły procesu", gdzie użytkownik może sprawdzić:
-        * Użyte parametry (styl, temperatura).
-        * Dokładny prompt użyty do wygenerowania grafiki (w expanderze).
-        * Pełny prompt systemowy, który został użyty do analizy (w expanderze).
-5. **Zbieranie Ocen (Feedback Loop):**
-    * Pod wynikami znajduje się formularz oceny z przyciskami "👍 Dobrze" i "👎 Źle" oraz polem na dodatkowe uwagi.
-    * Po zapisaniu oceny, wszystkie dane o procesie oraz sama grafika są zapisywane na dysku.
-
 ### Zapisywane Dane
 
 Grafiki są zapisywane w folderze `generated_images/`. Metadane każdej generacji i oceny są dopisywane do pliku `feedback.csv`, który zawiera następujące kolumny:
@@ -50,32 +52,29 @@ Grafiki są zapisywane w folderze `generated_images/`. Metadane każdej generacj
 * `timestamp`: Data i czas generacji.
 * `original_text`: Pierwotny tekst wprowadzony przez użytkownika.
 * `used_system_prompt`: Pełna treść promptu systemowego użytego w danym cyklu.
-* `style`: Wybrany styl grafiki.
-* `temperature`: Ustawiona temperatura.
-* `generated_prompt`: Prompt wygenerowany przez model językowy i użyty do stworzenia obrazu.
+* `text_temperature`: Temperatura użyta do analizy tekstu.
+* `image_temperature`: Temperatura użyta do generowania obrazu.
+* `reasoning`: Pełne rozumowanie modelu (KROK 1-3 z Chain-of-Thought).
+* `generated_prompt`: Końcowy prompt wygenerowany przez model językowy i użyty do stworzenia obrazu.
 * `image_filename`: Nazwa pliku z zapisaną grafiką.
 * `rating`: Ocena ("Dobrze" lub "Źle").
 * `comments`: Dodatkowe uwagi od użytkownika.
-
 ## Wymagania dla grafiki
 
-Wymagania zostały zaimplementowane poprzez odpowiednią konstrukcję domyślnego promptu systemowego oraz opcje w panelu bocznym.
+Wymagania ETR zostały zaimplementowane poprzez odpowiednią konstrukcję domyślnego promptu systemowego z 10 zasadami:
 
-* Grafika ma kształt kwadratu (generowana w rozdzielczości 1024x1024).
-* Styl do wyboru: fotograficzny (domyślny), rysunkowy, komiksowy.
-* Temperatura do ustawienia (domyślnie 0.0).
-* Ograniczenie elementów graficznych i polski kontekst kulturowy są zasugerowane w domyślnym prompcie systemowym, który jest w pełni edytowalny.
+1. **DOSŁOWNOŚĆ:** Bez metafor i symboli artystycznych
+2. **PROSTOTA:** Jedna scena, 1-2 obiekty/osoby, proste tło
+3. **REALIZM:** Styl fotorealistyczny
+4. **JEDNOZNACZNOŚĆ:** Typowe, łatwo rozpoznawalne obiekty
+5. **KONTEKST POLSKI:** Subtelne wskażówki polskiego kontekstu
+6. **EMOCJE:** Mimika twarzy dla osób, proste obiekty dla abstrakcji
+7. **KONTAKT WZROKOWY:** Osoby patrzą na siebie
+8. **BEZ TEKSTU:** Unikaj napisów (z wyjątkami)
+9. **KOLORY:** Ograniczona paleta, stonowane barwy
+10. **TŁO:** Jednolite lub delikatny gradient
 
-## Warianty Generowania Grafik
-
-### Wariant A: Images API (eksperymentalny)
-
-- **Status:** Przygotowanie do przyszłej integracji
-- **Opis:** Próbuje użyć Google Images API (gdy będzie dostępne) do rzeczywistej generacji obrazów
-- **Zalety:** Profesjonalne, rzeczywiste obrazy zgodne z promptem
-- **Limitacje:** Aktualnie Google nie udostępnia Images API w Python SDK
-- **Kod:** Funkcja `generate_image_variant_a()` - zarezerwowana na przyszłość
-
+Grafika ma kształt kwadratu (rozdzielczość 1024x1024).
 ### Wariant B: Placeholder + Tekst (zawsze dostępny)
 
 - **Status:** Aktywny i w pełni funkcjonalny
@@ -123,3 +122,27 @@ streamlit run app.py
 2. **Obsługa alternatywnych modeli:** Dodanie wsparcia dla DALL-E, Stable Diffusion, itp.
 3. **Buforowanie promptów:** Oszczędzanie quotów API przez cachowanie
 4. **Eksport danych:** Możliwość eksportu historii w różnych formatach (JSON, Excel)
+## Techniki AI zastosowane w projekcie
+
+### 1. Chain-of-Thought Prompting
+Model wyświetla swoje rozumowanie w 3 krokach przed wygenerowaniem promptu, co zwiększa jakość i przejrzystość procesu.
+
+### 2. Few-Shot Learning
+Prompt systemowy zawiera 3 szczegółowe przykłady różnych typów scen ETR, z których model uczy się odpowiedniego podejścia.
+
+### 3. Rozdzielone Temperatury
+- **Analiza tekstu (0.6):** Optymalny balans między kreatywnością a spójnością rozumowania
+- **Generowanie obrazu (0.4):** Konserwatywne podejście dla stabilnej jakości wizualnej
+
+### 4. Wariant B dla Emocji
+Hybrydowe podejście:
+- Osoby z emocjami → mimika + język ciała
+- Abstrakcyjne emocje → prosty obiekt symboliczny
+
+## Przyszłe Ulepszenia
+
+1. **A/B Testing:** Automatyczne porównywanie różnych wersji promptów
+2. **Obsługa alternatywnych modeli:** Dodanie wsparcia dla DALL-E, Stable Diffusion, itp.
+3. **Buforowanie promptów:** Oszczędzanie quotów API przez cachowanie
+4. **Eksport danych:** Możliwość eksportu historii w różnych formatach (JSON, Excel)
+5. **Analityka:** Dashboard z metrykami ocen i najpopularniejszymi wzorcami
